@@ -18,6 +18,13 @@ class TypeController extends Controller
 
         return view('admin.types.index', compact('types'));
     }
+    public function typeProjects()
+    {
+        $types= Type::all();
+
+
+        return view('admin.types.typeProjects',compact('types'));
+    }
 
     /**
      * Store a newly created resource in storage.

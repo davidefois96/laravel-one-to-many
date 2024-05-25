@@ -47,6 +47,23 @@
     </div>
     <div class="mb-3">
 
+        <label for="type" class=" form-label fs-4">Tipo: </label>
+        <select id="type" name="type_id" class="form-select" aria-label="Default select example">
+            <option>Seleziona un tipo</option>
+
+            @foreach ($types as $type )
+
+               <option value="{{$type->id}}" @if (old('type-id') == $type->id) selected @endif>{{$type->name}}</option>
+
+            @endforeach
+
+
+          </select>
+
+
+    </div>
+    <div class="mb-3">
+
         <label for="image" class=" form-label fs-4">Immagine: </label>
         <input type="file" class="form-control" id="image" name="image" onchange="showImage(event)">
 

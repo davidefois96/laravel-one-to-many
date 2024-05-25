@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Functions\Helper;
 use App\Http\Requests\ProjectRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Type;
 
 
 class ProjectController extends Controller
@@ -17,9 +18,33 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::orderByDesc('id')->paginate(10);
 
-        return view('admin.projects.index',compact('projects'));
+
+        if(isset($_GET['search'])) {
+            $projects = Project::where('name','LIKE','%'.$_GET['search'].'%' )->orderBy('id','desc')->paginate(10);
+            $numberProjects = Project::where('name','LIKE','%'.$_GET['search'].'%' )->count();
+
+        } else {
+            $projects = Project::orderBy('id','desc')->paginate(10);
+            $numberProjects = Project::count();
+        }
+
+
+        $direction = 'desc';
+
+
+        return view('admin.projects.index',compact('projects','numberProjects','direction'));
+    }
+    public function orderBy($direction,$column)
+    {
+
+
+        $direction= $direction== 'desc'?'asc':'desc';
+        $projects = Project::orderBy($column,$direction)->paginate(10);
+        $numberProjects = Project::count();
+
+
+        return view('admin.projects.index',compact('projects','numberProjects','direction'));
     }
 
     /**
@@ -27,7 +52,8 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return view('admin.projects.create');
+        $types=Type::all();
+        return view('admin.projects.create',compact('types'));
     }
 
     /**
@@ -46,7 +72,10 @@ class ProjectController extends Controller
         $form_data['slug']=Helper::generateSlug($form_data['name'], new Project());
         $new_project= new Project();
         $new_project->fill($form_data);
+
+
         $new_project->save();
+
 
         return redirect()->route('admin.projects.show',$new_project);
 
@@ -65,7 +94,8 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        return view('admin.projects.edit', compact('project'));
+        $types=Type::all();
+        return view('admin.projects.edit', compact('project,types'));
     }
 
     /**
